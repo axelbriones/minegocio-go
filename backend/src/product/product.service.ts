@@ -8,22 +8,19 @@ export class ProductService {
 
   async create(userId: string, createProductDto: CreateProductDto) {
     return this.prisma.product.create({
-      data: {
-        ...createProductDto,
-        userId,
-      },
+      data: createProductDto,
     });
   }
 
-  async findAll(userId: string) {
+  async findAll(companyId: string) {
     return this.prisma.product.findMany({
-      where: { userId },
+      where: { companyId },
     });
   }
 
-  async findOne(id: string, userId: string) {
+  async findOne(id: string, companyId: string) {
     const product = await this.prisma.product.findFirst({
-      where: { id, userId },
+      where: { id, companyId },
     });
     if (!product) {
       throw new NotFoundException(`Product with ID ${id} not found`);

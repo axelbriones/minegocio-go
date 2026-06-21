@@ -7,12 +7,12 @@ export class SaleService {
   constructor(private prisma: PrismaService) {}
 
   async create(userId: string, createSaleDto: CreateSaleDto) {
-    // A real implementation would handle transaction, stock updates, etc.
-    // For MVP, we'll create the sale and items.
     return this.prisma.$transaction(async (tx) => {
       const sale = await tx.sale.create({
         data: {
           userId,
+          companyId: createSaleDto.companyId,
+          warehouseId: createSaleDto.warehouseId,
           totalAmount: createSaleDto.totalAmount,
           paymentType: createSaleDto.paymentType,
           items: {
@@ -30,21 +30,27 @@ export class SaleService {
 
       // Update stock for each product
       for (const item of createSaleDto.items) {
-        await tx.product.update({
-          where: { id: item.productId },
+        await tx.inventory.update({
+          where: {
+            productId_warehouseId: {
+              productId: item.productId,
+              warehouseId: createSaleDto.warehouseId
+            }
+          },
           data: {
-            stock: {
-              decrement: item.quantity,
-            },
+            currentStock: { decrement: item.quantity },
+            availableStock: { decrement: item.quantity },
           },
         });
 
-        await tx.stockMovement.create({
+        await tx.inventoryMovement.create({
           data: {
             productId: item.productId,
-            type: 'OUT',
+            warehouseId: createSaleDto.warehouseId,
+            userId,
+            type: 'SALE',
             quantity: item.quantity,
-            reason: 'SALE',
+            remarks: 'SALE',
           }
         });
       }

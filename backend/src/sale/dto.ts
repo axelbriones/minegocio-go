@@ -18,6 +18,14 @@ export class CreateSaleItemDto {
 
 export class CreateSaleDto {
   @ApiProperty()
+  @IsString()
+  companyId!: string;
+
+  @ApiProperty()
+  @IsString()
+  warehouseId!: string;
+
+  @ApiProperty()
   @IsNumber()
   totalAmount!: number;
 

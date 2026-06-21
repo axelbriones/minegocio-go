@@ -20,10 +20,9 @@ export class CreateProductDto {
   @IsNumber()
   cost?: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  stock?: number;
+  @ApiProperty()
+  @IsString()
+  companyId!: string;
 
   @ApiPropertyOptional()
   @IsOptional()
@@ -57,10 +56,6 @@ export class UpdateProductDto {
   @IsNumber()
   cost?: number;
 
-  @ApiPropertyOptional()
-  @IsOptional()
-  @IsNumber()
-  stock?: number;
 
   @ApiPropertyOptional()
   @IsOptional()

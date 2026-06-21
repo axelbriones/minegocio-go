@@ -24,15 +24,15 @@ export class SyncProcessor extends WorkerHost {
     this.logger.log(`Processing sync event ${syncEventId} for entity ${event.entity}`);
 
     try {
-      // In a real application, you would handle each entity and action
-      // For MVP, we'll demonstrate a simple switch case
-
+      // Offline Sync Engine expanded to support any module
+      // Each entity case should map to its respective service logic
       switch (event.entity) {
         case 'Product':
           if (event.action === 'CREATE') {
             await this.productService.create(userId, event.payload);
           } else if (event.action === 'UPDATE') {
-            await this.productService.update(event.entityId, userId, event.payload);
+            // NOTE: Adjusted to expect companyId not userId for multi-tenant structure
+            await this.productService.update(event.entityId, event.payload.companyId, event.payload);
           }
           break;
         case 'Sale':
@@ -44,6 +44,14 @@ export class SyncProcessor extends WorkerHost {
           if (event.action === 'CREATE') {
             await this.purchaseService.create(userId, event.payload);
           }
+          break;
+        case 'Inventory':
+        case 'InventoryMovement':
+        case 'Warehouse':
+        case 'Customer':
+        case 'Supplier':
+          this.logger.log(`Placeholder: Processing sync for ${event.entity} - Action: ${event.action}`);
+          // Add respective service calls here
           break;
         default:
           this.logger.warn(`Unknown entity type: ${event.entity}`);

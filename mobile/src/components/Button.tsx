@@ -1,28 +1,13 @@
-import React, { useRef } from 'react';
-import {
-  StyleSheet,
-  TouchableOpacity,
-  View,
-  Animated,
-  StyleProp,
-  ViewStyle,
-  TextStyle,
-} from 'react-native';
-import { useTheme } from '../theme/ThemeContext';
-import { spacing } from '../theme/spacing';
-import { tokens } from '../theme/tokens';
-import { animations } from '../theme/animations';
-import { Text } from './Text';
+import React from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import { colors, spacing, typography } from '../theme';
 
 interface ButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'secondary' | 'outline' | 'ghost' | 'destructive';
+  variant?: 'primary' | 'secondary' | 'outline';
   icon?: React.ReactNode;
   fullWidth?: boolean;
-  disabled?: boolean;
-  style?: StyleProp<ViewStyle>;
-  textStyle?: StyleProp<TextStyle>;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -31,109 +16,63 @@ export const Button: React.FC<ButtonProps> = ({
   variant = 'primary',
   icon,
   fullWidth = true,
-  disabled = false,
-  style,
-  textStyle,
 }) => {
-  const { colors, isDark } = useTheme();
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-
-  const handlePressIn = () => {
-    if (disabled) return;
-    Animated.timing(scaleAnim, {
-      toValue: 0.96,
-      duration: animations.timing.fast,
-      useNativeDriver: true,
-      easing: animations.easing.standard,
-    }).start();
-  };
-
-  const handlePressOut = () => {
-    if (disabled) return;
-    Animated.timing(scaleAnim, {
-      toValue: 1,
-      duration: animations.timing.normal,
-      useNativeDriver: true,
-      easing: animations.easing.standard,
-    }).start();
-  };
-
-  const getBackgroundColor = () => {
-    if (disabled) return isDark ? '#334155' : '#E2E8F0';
-    switch (variant) {
-      case 'primary': return colors.primary;
-      case 'secondary': return colors.secondary;
-      case 'destructive': return colors.destructive;
-      case 'outline': return 'transparent';
-      case 'ghost': return 'transparent';
-      default: return colors.primary;
-    }
-  };
-
-  const getTextColorToken = () => {
-    if (disabled) return 'textSecondary';
-    switch (variant) {
-      case 'primary':
-      case 'secondary':
-      case 'destructive':
-        return 'textInverse';
-      case 'outline':
-      case 'ghost':
-        return 'textPrimary';
-      default:
-        return 'textInverse';
-    }
-  };
-
-  const getBorderColor = () => {
-    if (disabled) return isDark ? '#334155' : '#E2E8F0';
-    if (variant === 'outline') return colors.border;
-    return 'transparent';
-  };
-
   return (
-    <Animated.View style={{ transform: [{ scale: scaleAnim }], width: fullWidth ? '100%' : 'auto' }}>
-      <TouchableOpacity
-        onPress={onPress}
-        onPressIn={handlePressIn}
-        onPressOut={handlePressOut}
-        activeOpacity={variant === 'ghost' ? 0.6 : 1}
-        disabled={disabled}
-        style={[
-          styles.button,
-          {
-            backgroundColor: getBackgroundColor(),
-            borderColor: getBorderColor(),
-            borderWidth: variant === 'outline' ? 2 : 0,
-            opacity: disabled && variant === 'ghost' ? tokens.opacity.disabled : tokens.opacity.full,
-          },
-          !disabled && variant !== 'outline' && variant !== 'ghost' && tokens.shadows.md,
-          style,
-        ]}
-      >
-        <View style={styles.contentContainer}>
-          {icon && <View style={styles.iconContainer}>{icon}</View>}
-          <Text
-            variant="button"
-            colorToken={getTextColorToken()}
-            style={textStyle}
-          >
-            {title}
-          </Text>
-        </View>
-      </TouchableOpacity>
-    </Animated.View>
+    <TouchableOpacity
+      style={[
+        styles.button,
+        variant === 'primary' && styles.primary,
+        variant === 'secondary' && styles.secondary,
+        variant === 'outline' && styles.outline,
+        fullWidth && styles.fullWidth,
+      ]}
+      onPress={onPress}
+      activeOpacity={0.8}
+    >
+      <View style={styles.contentContainer}>
+        {icon && <View style={styles.iconContainer}>{icon}</View>}
+        <Text
+          style={[
+            styles.text,
+            variant === 'outline' && styles.textOutline,
+          ]}
+        >
+          {title}
+        </Text>
+      </View>
+    </TouchableOpacity>
   );
 };
 
 const styles = StyleSheet.create({
   button: {
     height: 64, // Large tap target (chunk & tap-friendly rule)
-    borderRadius: tokens.borderRadius.lg,
+    borderRadius: 16,
     justifyContent: 'center',
     alignItems: 'center',
     paddingHorizontal: spacing.lg,
     marginBottom: spacing.md,
+    elevation: 2, // shadow for android
+    shadowColor: '#000', // shadow for ios
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  primary: {
+    backgroundColor: colors.primary,
+  },
+  secondary: {
+    backgroundColor: colors.secondary,
+  },
+  outline: {
+    backgroundColor: colors.surface,
+    borderWidth: 2,
+    borderColor: colors.border,
+    elevation: 0,
+    shadowOpacity: 0,
+  },
+  fullWidth: {
+    width: '100%',
   },
   contentContainer: {
     flexDirection: 'row',
@@ -142,5 +81,11 @@ const styles = StyleSheet.create({
   },
   iconContainer: {
     marginRight: spacing.sm,
+  },
+  text: {
+    ...typography.button,
+  },
+  textOutline: {
+    color: colors.textPrimary,
   },
 });

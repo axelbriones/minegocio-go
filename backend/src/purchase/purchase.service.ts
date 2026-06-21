@@ -11,6 +11,8 @@ export class PurchaseService {
       const purchase = await tx.purchase.create({
         data: {
           userId,
+          companyId: createPurchaseDto.companyId,
+          warehouseId: createPurchaseDto.warehouseId,
           totalAmount: createPurchaseDto.totalAmount,
           items: {
             create: createPurchaseDto.items.map(item => ({
@@ -27,22 +29,39 @@ export class PurchaseService {
 
       // Update stock for each product
       for (const item of createPurchaseDto.items) {
-        await tx.product.update({
-          where: { id: item.productId },
-          data: {
-            stock: {
-              increment: item.quantity,
-            },
-            cost: item.cost, // Update last cost
+        // Upsert inventory
+        await tx.inventory.upsert({
+          where: {
+            productId_warehouseId: {
+              productId: item.productId,
+              warehouseId: createPurchaseDto.warehouseId
+            }
           },
+          update: {
+            currentStock: { increment: item.quantity },
+            availableStock: { increment: item.quantity },
+          },
+          create: {
+            productId: item.productId,
+            warehouseId: createPurchaseDto.warehouseId,
+            currentStock: item.quantity,
+            availableStock: item.quantity,
+          }
         });
 
-        await tx.stockMovement.create({
+        await tx.product.update({
+          where: { id: item.productId },
+          data: { lastCost: item.cost },
+        });
+
+        await tx.inventoryMovement.create({
           data: {
             productId: item.productId,
-            type: 'IN',
+            warehouseId: createPurchaseDto.warehouseId,
+            userId,
+            type: 'PURCHASE',
             quantity: item.quantity,
-            reason: 'PURCHASE',
+            remarks: 'PURCHASE',
           }
         });
       }

@@ -6,8 +6,9 @@ import { InventoryScreen } from '../modules/inventory/screens/InventoryScreen';
 import { InventoryDetailScreen } from '../modules/inventory/screens/InventoryDetailScreen';
 import { ScannerScreen } from '../modules/scanner/screens/ScannerScreen';
 import { MovementsScreen } from '../modules/movements/screens/MovementsScreen';
-import { ProfileScreen } from '../modules/profile/screens/ProfileScreen';
-import { LayoutDashboard, List, ScanLine, ArrowLeftRight, User } from 'lucide-react-native';
+import { MigoScreen } from '../modules/migo/screens/MigoScreen';
+import { SettingsScreen } from '../modules/settings/screens/SettingsScreen';
+import { LayoutDashboard, List, ScanLine, ArrowLeftRight, Settings, Sparkles } from 'lucide-react-native';
 import { colors } from '../theme';
 
 const Tab = createBottomTabNavigator();
@@ -66,11 +67,19 @@ export const MainNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="ProfileTab"
-        component={ProfileScreen}
+        name="MigoTab"
+        component={MigoScreen}
         options={{
-          tabBarLabel: 'Perfil',
-          tabBarIcon: ({ color }) => <User color={color} size={24} />
+          tabBarLabel: 'MIGO',
+          tabBarIcon: ({ color }) => <Sparkles color={color} size={24} />
+        }}
+      />
+      <Tab.Screen
+        name="SettingsTab"
+        component={SettingsScreen}
+        options={{
+          tabBarLabel: 'Ajustes',
+          tabBarIcon: ({ color }) => <Settings color={color} size={24} />
         }}
       />
     </Tab.Navigator>

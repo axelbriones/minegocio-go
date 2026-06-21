@@ -2,6 +2,12 @@ import * as SQLite from 'expo-sqlite';
 
 let db: SQLite.SQLiteDatabase | null = null;
 
+export const getPendingSyncCount = async () => {
+  const database = await getDatabase();
+  const result = await database.getFirstAsync<{ count: number }>("SELECT COUNT(*) as count FROM sync_queue WHERE synced = 0");
+  return result ? result.count : 0;
+};
+
 export const getDatabase = async () => {
   if (db) return db;
   db = await SQLite.openDatabaseAsync('minegociogo.db');

@@ -1,7 +1,7 @@
 {
   "extends": "../tsconfig.base.json",
   "compilerOptions": {
-    "strict": true,
-    "jsx": "react-native"
-  }
+    "outDir": "./dist"
+  },
+  "include": ["src/**/*"]
 }

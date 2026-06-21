@@ -67,7 +67,6 @@ export const TextInput: React.FC<TextInputProps> = ({
             styles.input,
             {
               color: colors.textPrimary,
-              ...typography.sizes,
             },
             style,
           ]}

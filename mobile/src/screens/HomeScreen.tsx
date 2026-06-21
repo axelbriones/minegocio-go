@@ -1,30 +1,36 @@
 import React from 'react';
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
-import { ShoppingCart, PackagePlus, List, TrendingUp, Sparkles } from 'lucide-react-native';
-import { Button } from '../components/Button';
-import { colors, spacing, typography } from '../theme';
+import { StyleSheet, View, SafeAreaView, ScrollView } from 'react-native';
+import { Button, Icon, Text } from '../components';
+import { spacing } from '../theme';
+import { useTheme } from '../theme/ThemeContext';
 
 export const HomeScreen = () => {
+  const { colors, isDark } = useTheme();
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.background }]}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
         <View style={styles.header}>
-          <Text style={styles.title}>MI NEGOCIO <Text style={styles.brandGo}>GO</Text></Text>
-          <Text style={styles.subtitle}>Tu libreta inteligente</Text>
+          <Text variant="h1" align="center">
+            MI NEGOCIO <Text variant="h1" colorToken="primary">GO</Text>
+          </Text>
+          <Text variant="subtitle" colorToken="textSecondary" align="center" style={styles.subtitleMargin}>
+            Tu libreta inteligente
+          </Text>
         </View>
 
         <View style={styles.mainActions}>
           <Button
             title="+ VENTA"
             onPress={() => console.log('Nueva Venta')}
-            icon={<ShoppingCart color={colors.surface} size={28} />}
+            icon={<Icon name="ShoppingCart" colorToken="textInverse" size={28} />}
           />
 
           <Button
             title="+ COMPRA"
             onPress={() => console.log('Nueva Compra')}
             variant="outline"
-            icon={<PackagePlus color={colors.textPrimary} size={28} />}
+            icon={<Icon name="PackagePlus" colorToken="textPrimary" size={28} />}
           />
         </View>
 
@@ -35,7 +41,7 @@ export const HomeScreen = () => {
                 title="INVENTARIO"
                 onPress={() => console.log('Inventario')}
                 variant="outline"
-                icon={<List color={colors.textPrimary} size={24} />}
+                icon={<Icon name="List" colorToken="textPrimary" size={24} />}
               />
             </View>
             <View style={styles.halfWidth}>
@@ -43,7 +49,7 @@ export const HomeScreen = () => {
                 title="GANANCIAS"
                 onPress={() => console.log('Ganancias')}
                 variant="outline"
-                icon={<TrendingUp color={colors.textPrimary} size={24} />}
+                icon={<Icon name="TrendingUp" colorToken="textPrimary" size={24} />}
               />
             </View>
           </View>
@@ -54,9 +60,9 @@ export const HomeScreen = () => {
             title="MIGO IA"
             onPress={() => console.log('MIGO IA')}
             variant="secondary"
-            icon={<Sparkles color={colors.surface} size={24} />}
+            icon={<Icon name="Sparkles" colorToken="textInverse" size={24} />}
           />
-          <Text style={styles.aiHelperText}>
+          <Text variant="subtitle" colorToken="textSecondary" align="center" style={styles.aiHelperTextMargin}>
             Toca para usar voz o fotos
           </Text>
         </View>
@@ -68,7 +74,6 @@ export const HomeScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: colors.background,
   },
   scrollContent: {
     padding: spacing.lg,
@@ -79,15 +84,7 @@ const styles = StyleSheet.create({
     marginBottom: spacing.xxl,
     alignItems: 'center',
   },
-  title: {
-    ...typography.h1,
-    letterSpacing: -0.5,
-  },
-  brandGo: {
-    color: colors.primary,
-  },
-  subtitle: {
-    ...typography.subtitle,
+  subtitleMargin: {
     marginTop: spacing.xs,
   },
   mainActions: {
@@ -108,8 +105,7 @@ const styles = StyleSheet.create({
     marginTop: 'auto', // Pushes to bottom
     alignItems: 'center',
   },
-  aiHelperText: {
-    ...typography.subtitle,
+  aiHelperTextMargin: {
     marginTop: spacing.sm,
   },
 });

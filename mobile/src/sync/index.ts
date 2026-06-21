@@ -1,7 +1,9 @@
 import { getDatabase } from '../database';
+import { apiPushToBackend, apiFetchRemoteChanges } from './client';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type SyncOperation = 'CREATE' | 'UPDATE' | 'DELETE';
-export type SyncEntity = 'products' | 'sales' | 'purchases';
+export type SyncEntity = 'products' | 'sales' | 'purchases' | 'stock_movements';
 
 export interface SyncQueueItem {
   id: string;
@@ -33,7 +35,6 @@ export const addToSyncQueue = async (
 
 export const getPendingSyncItems = async (): Promise<SyncQueueItem[]> => {
   const db = await getDatabase();
-  // Fetch PENDING and ERROR items that haven't hit max retries
   return await db.getAllAsync<SyncQueueItem>(
     `SELECT * FROM sync_queue WHERE (status = 'PENDING' OR status = 'ERROR') AND retryCount < 3 ORDER BY createdAt ASC`
   );
@@ -43,8 +44,6 @@ export const markSyncItemError = async (id: string, errorMsg: string, retryCount
   const db = await getDatabase();
   const newRetryCount = retryCount + 1;
 
-  // If it hits 3 retries, we might want to mark it as permanently failed, or just keep it as ERROR
-  // but it won't be picked up by getPendingSyncItems anymore due to the retryCount < 3 check.
   await db.runAsync(
     `UPDATE sync_queue SET status = 'ERROR', error = ?, retryCount = ? WHERE id = ?`,
     [errorMsg, newRetryCount, id]
@@ -56,37 +55,83 @@ export const removeSyncItem = async (id: string) => {
   await db.runAsync(`DELETE FROM sync_queue WHERE id = ?`, [id]);
 };
 
-// Mock function for backend API call
-const pushToBackend = async (item: SyncQueueItem) => {
-  // In a real app, this would be a fetch call to the backend
-  console.log(`Pushing to backend: ${item.operation} ${item.entity} ${item.entityId}`);
-  // Simulate network request
-  return new Promise((resolve, reject) => {
-    setTimeout(() => {
-        // Randomly succeed or fail for demonstration
-        if (Math.random() > 0.8) {
-             reject(new Error("Network error simulation"));
-        } else {
-             resolve(true);
-        }
-    }, 500);
-  });
-};
+let isSyncing = false;
+const SYNC_CURSOR_KEY = '@last_sync_timestamp';
+
+const getLastSyncTimestamp = async () => {
+    try {
+        const val = await AsyncStorage.getItem(SYNC_CURSOR_KEY);
+        return val || new Date(0).toISOString();
+    } catch {
+        return new Date(0).toISOString();
+    }
+}
+
+const setLastSyncTimestamp = async (ts: string) => {
+    try {
+        await AsyncStorage.setItem(SYNC_CURSOR_KEY, ts);
+    } catch (e) {
+        console.error("Failed to save sync cursor", e);
+    }
+}
 
 export const processSyncQueue = async () => {
-  console.log("Processing sync queue...");
-  const items = await getPendingSyncItems();
+  if (isSyncing) return;
+  isSyncing = true;
 
-  for (const item of items) {
-    try {
-      await pushToBackend(item);
-      // If successful, remove from queue
-      await removeSyncItem(item.id);
-      console.log(`Successfully synced item ${item.id}`);
-    } catch (error: any) {
-      console.error(`Failed to sync item ${item.id}: ${error.message}`);
-      await markSyncItemError(item.id, error.message, item.retryCount);
-    }
+  try {
+      console.log("Processing sync queue...");
+      const items = await getPendingSyncItems();
+
+      if (items.length > 0) {
+          for (const item of items) {
+            try {
+              console.log(`Pushing to backend: ${item.operation} ${item.entity} ${item.entityId}`);
+
+              if (item.retryCount > 0) {
+                  const backoffDelay = Math.pow(2, item.retryCount) * 1000;
+                  console.log(`Backoff delay for ${item.id}: ${backoffDelay}ms`);
+                  await new Promise(resolve => setTimeout(resolve, backoffDelay));
+              }
+
+              await apiPushToBackend(item);
+              await removeSyncItem(item.id);
+              console.log(`Successfully synced item ${item.id}`);
+            } catch (error: any) {
+              console.error(`Failed to sync item ${item.id}: ${error.message}`);
+              await markSyncItemError(item.id, error.message, item.retryCount);
+            }
+          }
+      } else {
+         console.log("No pending items in sync queue.");
+      }
+
+      // --- Download Remote Changes (PULL) ---
+      let lastSyncTimestamp = await getLastSyncTimestamp();
+      console.log(`Fetching remote changes since ${lastSyncTimestamp}...`);
+
+      const entities: SyncEntity[] = ['products', 'sales', 'purchases'];
+      let maxUpdatedAtFetched = lastSyncTimestamp;
+
+      for (const entity of entities) {
+          try {
+              const remoteItems = await apiFetchRemoteChanges(entity, lastSyncTimestamp);
+              for (const rItem of remoteItems) {
+                  await mergeRemoteItemSafely(entity, rItem);
+
+                  if (new Date(rItem.updatedAt) > new Date(maxUpdatedAtFetched)) {
+                      maxUpdatedAtFetched = rItem.updatedAt;
+                  }
+              }
+          } catch (error: any) {
+              console.error(`Error pulling ${entity}:`, error.message);
+          }
+      }
+
+      await setLastSyncTimestamp(maxUpdatedAtFetched);
+
+  } finally {
+      isSyncing = false;
   }
 };
 
@@ -98,42 +143,39 @@ interface SyncableEntity {
   [key: string]: any;
 }
 
-// Conflict resolution and Merge
 export const resolveConflict = (localItem: SyncableEntity, remoteItem: SyncableEntity): SyncableEntity => {
-    // 1. If remote version is strictly greater, server wins
-    if (remoteItem.version > localItem.version) {
-        return remoteItem;
-    }
-    // 2. If local version is greater, local wins
-    if (localItem.version > remoteItem.version) {
-        return localItem;
-    }
+    if (remoteItem.version > localItem.version) return remoteItem;
+    if (localItem.version > remoteItem.version) return localItem;
 
-    // 3. Versions are equal. Fallback to updatedAt timestamp
     const localDate = new Date(localItem.updatedAt).getTime();
     const remoteDate = new Date(remoteItem.updatedAt).getTime();
 
-    if (remoteDate > localDate) {
-        return remoteItem;
-    }
-
-    return localItem;
+    return remoteDate > localDate ? remoteItem : localItem;
 };
 
-// Merging a remote item into local DB
-export const mergeRemoteItem = async (entity: SyncEntity, remoteItem: SyncableEntity) => {
+// Merging a remote item safely without dynamic Object.keys that crash SQLite
+export const mergeRemoteItemSafely = async (entity: SyncEntity, remoteItem: SyncableEntity) => {
     const db = await getDatabase();
 
-    // Check if item exists locally
     const localItem = await db.getFirstAsync<SyncableEntity>(
         `SELECT * FROM ${entity} WHERE id = ?`,
         [remoteItem.id]
     );
 
+    // Whitelist columns to avoid SQLite crash from unexpected JSON properties like 'items'
+    const getEntityColumns = (ent: string) => {
+        if (ent === 'products') return ['id', 'name', 'barcode', 'priceBuy', 'priceSell', 'stock', 'category', 'image', 'createdAt', 'updatedAt', 'version', 'isDeleted'];
+        if (ent === 'sales') return ['id', 'total', 'paymentType', 'createdAt', 'updatedAt', 'version', 'isDeleted'];
+        if (ent === 'purchases') return ['id', 'supplier', 'total', 'createdAt', 'updatedAt', 'version', 'isDeleted'];
+        return [];
+    };
+
+    const allowedColumns = getEntityColumns(entity);
+    if (allowedColumns.length === 0) return;
+
     if (!localItem) {
-        // Doesn't exist locally, so we insert it
-        const keys = Object.keys(remoteItem);
-        const values = Object.values(remoteItem);
+        const keys = allowedColumns;
+        const values = keys.map(k => remoteItem[k] ?? null);
         const placeholders = keys.map(() => '?').join(', ');
 
         await db.runAsync(
@@ -144,21 +186,17 @@ export const mergeRemoteItem = async (entity: SyncEntity, remoteItem: SyncableEn
         return;
     }
 
-    // Conflict resolution
     const winningItem = resolveConflict(localItem, remoteItem);
 
     if (winningItem === remoteItem) {
-        // Remote won, update local DB
-        const keys = Object.keys(remoteItem).filter(k => k !== 'id');
-        const setClause = keys.map(k => `${k} = ?`).join(', ');
-        const values = keys.map(k => remoteItem[k]);
+        const keysToUpdate = allowedColumns.filter(k => k !== 'id');
+        const setClause = keysToUpdate.map(k => `${k} = ?`).join(', ');
+        const values = keysToUpdate.map(k => remoteItem[k] ?? null);
 
         await db.runAsync(
             `UPDATE ${entity} SET ${setClause} WHERE id = ?`,
             [...values, remoteItem.id]
         );
-        console.log(`Updated local item ${remoteItem.id} in ${entity} with remote version`);
-    } else {
-         console.log(`Local item ${localItem.id} in ${entity} is newer or same, kept local version`);
+        console.log(`Updated local item ${remoteItem.id} in ${entity}`);
     }
 };

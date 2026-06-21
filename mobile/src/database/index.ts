@@ -76,6 +76,9 @@ export const initDatabase = async () => {
       quantity INTEGER NOT NULL,
       reason TEXT,
       createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      version INTEGER NOT NULL DEFAULT 1,
+      isDeleted INTEGER NOT NULL DEFAULT 0,
       FOREIGN KEY (productId) REFERENCES products (id)
     );
 

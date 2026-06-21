@@ -47,6 +47,6 @@ export default function App() {
           <Stack.Screen name="Login" component={LoginScreen} />
         )}
       </Stack.Navigator>
-    </>
+    </NavigationContainer>
   );
 }

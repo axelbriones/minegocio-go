@@ -1,18 +1,26 @@
-# Mi Negocio GO - UX Wireframes
+# Mi Negocio GO - UX Wireframes (V2 - Inventario Inteligente)
 
-Este documento contiene los wireframes en formato texto/estructural de las 8 pantallas solicitadas, diseñadas bajo el concepto de "cuaderno digital inteligente" (tipo WhatsApp) con botones grandes y un máximo de 3 toques por acción.
+Este documento contiene los wireframes estructurales diseñados bajo el nuevo paradigma: **Un Centro de Control de Inventario Inteligente impulsado por IA.**
+La aplicación prioriza el control de stock, uso intensivo del escáner y la interacción con MIGO, dejando Ventas y Compras en un plano secundario.
+
+Regla general UX: Máximo 3 toques, mínima escritura manual, escáner predominante.
+
+---
+
+## Nueva Jerarquía de Navegación (Bottom Tab / Menú)
+`[🏠 Panel] [📦 Inventario] [📷 Escáner] [🔄 Movs] [🤖 MIGO] [⚙️ Más]`
 
 ---
 
 ## 1. Login
 
-**Objetivo:** Ingreso rápido y seguro, diseñado para funcionar también sin conexión mediante vinculación de dispositivo.
+**Objetivo:** Ingreso rápido y seguro, offline-first.
 
 ```text
 +-------------------------------------------------+
 |                                                 |
 |               [ LOGO MIGO ]                     |
-|            "Mi Negocio GO"                      |
+|           Inventario Inteligente                |
 |                                                 |
 |                                                 |
 |  [ Ícono Teléfono ] Número de Teléfono          |
@@ -26,96 +34,164 @@ Este documento contiene los wireframes en formato texto/estructural de las 8 pan
 |  |           INGRESAR (Verde Migo)           |  |
 |  +-------------------------------------------+  |
 |                                                 |
-|             ¿Olvidaste tu PIN?                  |
-|                                                 |
 +-------------------------------------------------+
 ```
-*Notas de Diseño:* Fondo limpio, contraste alto, teclado numérico nativo para ingreso rápido.
 
 ---
 
-## 2. Dashboard (Pantalla Principal)
+## 2. Dashboard (Centro de Control)
 
-**Objetivo:** Resumen rápido del día y acceso inmediato a las operaciones principales (Ventas y Compras). Estilo chat/atajo.
+**Objetivo:** Control absoluto de la bodega. Alertas, MIGO y accesos rápidos a operaciones de inventario, no de ventas.
 
 ```text
 +-------------------------------------------------+
-| [Foto Perfil]   Hola, María!        [Icono 🔔]  |
-|                                                 |
-|  Resumen de Hoy:                                |
-|  💰 Ingresos: $120.00                           |
-|  📦 Ventas: 15                                  |
+| [Foto]   Hola, María!         [☁️ Sync] [🔔 2]   |
 |                                                 |
 |  +-------------------+   +-------------------+  |
-|  |    [ Ícono + ]    |   |    [ Ícono - ]    |  |
-|  |   NUEVA VENTA     |   |   NUEVA COMPRA    |  |
-|  |   (Verde Migo)    |   |   (Azul Digital)  |  |
+|  |   [📷 Escáner]    |   |    [🔄 Movimiento]|  |
+|  |   ESCANEAR        |   |   REGISTRAR       |  |
+|  +-------------------+   +-------------------+  |
+|  +-------------------+   +-------------------+  |
+|  |   [📦 Inventario] |   |    [🤖 MIGO]      |  |
+|  |   CONSULTAR       |   |   PREGUNTAR IA    |  |
 |  +-------------------+   +-------------------+  |
 |                                                 |
-|  Últimos Movimientos:                           |
-|  > Venta: 2x Coca Cola                 $3.00    |
-|  > Compra: 10x Pan                     $5.00    |
-|  > Venta: 1x Leche                     $1.50    |
+|  🚨 Alertas Inteligentes (MIGO):               |
+|  [!] Coca Cola 600ml está a punto de agotarse.  |
+|  [!] 3 discrepancias en stock detectadas hoy.   |
+|                                                 |
+|  Última Actividad:                              |
+|  > Entrada: 50x Cajas Cartón      [Hace 5m]     |
+|  > Salida: 2x Cinta Adhesiva      [Hace 10m]    |
 |                                                 |
 |-------------------------------------------------|
-| [🏠 Inicio] [📦 Inventario] [🤖 MIGO] [⚙️ Ajustes]|
+| [🏠 Panel] [📦 Inv] [📷 Escan] [🔄 Movs] [🤖 MIGO]|
 +-------------------------------------------------+
 ```
-*Notas de Diseño:* Menú de navegación inferior persistente. Botones gigantes de Venta/Compra para cumplir la regla de "máximo 3 toques".
 
 ---
 
-## 3. Inventario
+## 3. Inventario (Módulo Principal)
 
-**Objetivo:** Lista de productos tipo "contactos" (simple, sin tablas complejas de ERP). Búsqueda rápida.
+**Objetivo:** Búsqueda instantánea, filtros ágiles e indicadores visuales de salud de stock.
 
 ```text
 +-------------------------------------------------+
-|  [< Atrás]       INVENTARIO         [🔍 Buscar]|
+|  [< Atrás]       INVENTARIO       [🔍 Buscar]   |
+|                                                 |
+|  [ Filtros: Todo | Favoritos | Bajo Stock ▾ ]   |
 |                                                 |
 |  +-------------------------------------------+  |
-|  | ➕ AGREGAR NUEVO PRODUCTO                   |  |
+|  | ➕ NUEVO PRODUCTO                         |  |
 |  +-------------------------------------------+  |
 |                                                 |
-|  [🥑 Aguacate Hass]                             |
-|  Stock: 15 u.  |  Precio: $1.00             [>] |
+|  [🥑 Aguacate Hass] (⭐) [Foto]                 |
+|  Stock: 150 u. | Bodega A, Estante 2        [>] |
 |  ---------------------------------------------  |
-|  [🥖 Pan Francés]                               |
-|  Stock: 40 u.  |  Precio: $0.25             [>] |
+|  [🔴] [🥤 Coca Cola 600ml] [Foto]               |
+|  Stock: 3 u. (CRÍTICO) | Bodega Principal   [>] |
 |  ---------------------------------------------  |
+|  [🟢] [🥖 Pan Francés] [Foto]                   |
+|  Stock: 500 u. | Mostrador Frontal          [>] |
+|  ---------------------------------------------  |
+|                                                 |
+|-------------------------------------------------|
+| [🏠 Panel] [📦 Inv] [📷 Escan] [🔄 Movs] [🤖 MIGO]|
++-------------------------------------------------+
+```
+
+---
+
+## 4. Producto (Detalle Expandido)
+
+**Objetivo:** Mostrar información extensa y preparada para crecer, con énfasis en Insights de IA.
+
+```text
++-------------------------------------------------+
+|  [< Atrás]    DETALLE DE PRODUCTO      [✏️ Editar] |
+|                                                 |
+|  [ 📷 Foto del Producto ]                       |
+|  Coca Cola 600ml                                |
+|  SKU: CC-600 | Cód Barras: 7501055...           |
+|                                                 |
+|  Stock Actual:                                  |
+|  [ - ]        3         [ + ]    (BODEGA A)     |
+|                                                 |
+|  🤖 MIGO Insights:                              |
+|  "Rotación alta. Sugiero comprar 50 unidades    |
+|  para cubrir el fin de semana."                 |
+|                                                 |
+|  Datos Financieros (Plegable ▾):                |
+|  - Precio Venta: $1.50 | Costo Promedio: $0.90  |
+|  - Margen: 40%                                  |
+|                                                 |
+|  Logística y Trazabilidad (Plegable ▾):         |
+|  - Lotes / Fechas de Caducidad                  |
+|  - Proveedor Principal: Distribuidora XYZ       |
+|                                                 |
+|  [ Ver Historial de Movimientos de este item ]  |
+|                                                 |
+|-------------------------------------------------|
+| [🏠 Panel] [📦 Inv] [📷 Escan] [🔄 Movs] [🤖 MIGO]|
++-------------------------------------------------+
+```
+
+---
+
+## 5. Escáner (Módulo Principal)
+
+**Objetivo:** Flujo ultra rápido para operar usando códigos de barras o QR.
+
+```text
++-------------------------------------------------+
+|  [< Atrás]        ESCÁNER                       |
+|                                                 |
+|                                                 |
+|          [ VISOR DE CÁMARA ACTIVO ]             |
+|          [     --- LÍNEA ---      ]             |
+|          [                        ]             |
+|                                                 |
+|                                                 |
+|  [ 🔦 Linterna ]            [ ⌨️ Ingreso Manual ] |
+|                                                 |
+|  ---------------------------------------------  |
+|  ¿Qué deseas hacer al escanear?                 |
+|  ( ) Solo buscar y abrir detalle                |
+|  ( ) Entrada rápida (+1)                        |
+|  ( ) Salida rápida (-1)                         |
+|                                                 |
+|-------------------------------------------------|
+| [🏠 Panel] [📦 Inv] [📷 Escan] [🔄 Movs] [🤖 MIGO]|
++-------------------------------------------------+
+```
+
+---
+
+## 6. Movimientos (Pantalla Específica)
+
+**Objetivo:** Registrar entradas, salidas o transferencias sin pasar por "Compras/Ventas".
+
+```text
++-------------------------------------------------+
+|  [< Atrás]    NUEVO MOVIMIENTO                  |
+|                                                 |
+|  Tipo de Movimiento:                            |
+|  [ Entrada ] [ Salida ] [ Ajuste ] [ Traslado ] |
+|                                                 |
+|  Item a mover:                                  |
+|  +-------------------------------------------+  |
+|  | 🔍 Buscar o [📷 Escanear]                 |  |
+|  +-------------------------------------------+  |
+|                                                 |
 |  [🥤 Coca Cola 600ml]                           |
-|  Stock: 8 u. (Bajo) | Precio: $1.50         [>] |
-|  ---------------------------------------------  |
+|  Cantidad a retirar:                            |
+|  [ - ]       10        [ + ]                    |
 |                                                 |
-|-------------------------------------------------|
-| [🏠 Inicio] [📦 Inventario] [🤖 MIGO] [⚙️ Ajustes]|
-+-------------------------------------------------+
-```
-
----
-
-## 4. Producto (Detalle / Creación)
-
-**Objetivo:** Formulario mínimo. Sólo nombre, precio, costo (opcional) y cantidad.
-
-```text
-+-------------------------------------------------+
-|  [< Atrás]       PRODUCTO             [🗑️]      |
-|                                                 |
-|  [ 📷 Tomar Foto / Icono ]                      |
-|                                                 |
-|  Nombre del Producto:                           |
-|  [ Ej. Galletas Chokis                     ]    |
-|                                                 |
-|  Precio de Venta ($):                           |
-|  [ $ 0.50                                  ]    |
-|                                                 |
-|  Stock Actual (Cantidad):                       |
-|  [ - ]        25         [ + ]                  |
-|                                                 |
+|  Motivo (Opcional):                             |
+|  [ Daño / Merma / Venta / Consumo interno ]     |
 |                                                 |
 |  +-------------------------------------------+  |
-|  |              GUARDAR CAMBIOS              |  |
+|  |       ✅ CONFIRMAR MOVIMIENTO             |  |
 |  +-------------------------------------------+  |
 |                                                 |
 +-------------------------------------------------+
@@ -123,125 +199,84 @@ Este documento contiene los wireframes en formato texto/estructural de las 8 pan
 
 ---
 
-## 5. Ventas (Nueva Venta)
+## 7. MIGO (Asistente de IA Avanzado)
 
-**Objetivo:** Registro ultra rápido. Como enviar un mensaje.
-
-```text
-+-------------------------------------------------+
-|  [< Atrás]      REGISTRAR VENTA                 |
-|                                                 |
-|  1. ¿Qué vendiste? (Escanea o busca)            |
-|  +-------------------------------------------+  |
-|  | 🔍 Buscar producto...             [📷 Escanear]
-|  +-------------------------------------------+  |
-|                                                 |
-|  [+] Coca Cola 600ml    (1) x $1.50 = $1.50     |
-|  [+] Pan Francés        (2) x $0.25 = $0.50     |
-|                                                 |
-|                                                 |
-|  Total a cobrar:                     $2.00      |
-|                                                 |
-|  +-------------------------------------------+  |
-|  |          ✅ CONFIRMAR VENTA               |  |
-|  +-------------------------------------------+  |
-|                                                 |
-+-------------------------------------------------+
-```
-*Notas de Diseño:* Menos de 3 toques: Tocar 'Nueva Venta' en Dashboard -> Tocar el producto o escanear -> Confirmar.
-
----
-
-## 6. Compras (Ingreso de Mercadería)
-
-**Objetivo:** Igual de simple que la venta. Sólo aumenta el stock y registra el gasto.
-
-```text
-+-------------------------------------------------+
-|  [< Atrás]      REGISTRAR COMPRA                |
-|                                                 |
-|  1. ¿Qué compraste/ingresó?                     |
-|  +-------------------------------------------+  |
-|  | 🔍 Buscar producto...             [📷 Escanear]
-|  +-------------------------------------------+  |
-|                                                 |
-|  [+] Aguacate Hass      (10) u.                 |
-|                                                 |
-|  Costo Total de la compra ($):                  |
-|  [ $ 8.00                                  ]    |
-|                                                 |
-|                                                 |
-|  +-------------------------------------------+  |
-|  |          ✅ CONFIRMAR COMPRA              |  |
-|  +-------------------------------------------+  |
-|                                                 |
-+-------------------------------------------------+
-```
-
----
-
-## 7. Configuración
-
-**Objetivo:** Ajustes mínimos. Énfasis en la sincronización, copias de seguridad (seguridad/offline) e identidad.
-
-```text
-+-------------------------------------------------+
-|  [< Atrás]      CONFIGURACIÓN                   |
-|                                                 |
-|  PERFIL:                                        |
-|  👤 María Negocio (Mi Tiendita)                 |
-|  📱 +503 7777-8888                              |
-|                                                 |
-|  ESTADO DE SINCRONIZACIÓN:                      |
-|  ☁️ Todos los datos guardados en la nube.      |
-|  [ Sincronizar Ahora ]                          |
-|                                                 |
-|  OPCIONES:                                      |
-|  [🔒] Cambiar PIN de Seguridad              [>] |
-|  [🖨️] Impresora Bluetooth                   [>] |
-|  [📞] Ayuda por WhatsApp                    [>] |
-|                                                 |
-|  +-------------------------------------------+  |
-|  |             CERRAR SESIÓN                 |  |
-|  +-------------------------------------------+  |
-|                                                 |
-|-------------------------------------------------|
-| [🏠 Inicio] [📦 Inventario] [🤖 MIGO] [⚙️ Ajustes]|
-+-------------------------------------------------+
-```
-
----
-
-## 8. MIGO (Asistente de IA)
-
-**Objetivo:** Interfaz invisible/mágica. Estilo WhatsApp con chat de voz y texto para corrección/autocompletado de inventario.
+**Objetivo:** Sentirse como un empleado experto en inventario, no solo un chatbot.
 
 ```text
 +-------------------------------------------------+
 |  [< Atrás]         MIGO IA            [ℹ️ Info] |
 |                                                 |
-|                                                 |
 |  [Mensaje MIGO]:                                |
-|  ¡Hola! Soy MIGO. Puedes decirme qué vendiste,  |
-|  qué compraste o enviarme una foto de tus       |
-|  facturas para registrarlas automáticamente.    |
+|  ¡Hola! Soy MIGO. Puedo registrar inventario,   |
+|  analizar tu stock y sugerir compras.           |
 |                                                 |
 |            +----------------------------------+ |
-|            | "Acabo de vender 3 cocas y 2     | |
-|            | panes franceses"                 | |
+|            | "¿Cuáles son los 3 productos con | |
+|            | menor rotación?"                 | |
 |            +----------------------------------+ |
 |                                                 |
 |  [Mensaje MIGO]:                                |
-|  ¡Listo! Registré la venta por $5.00.           |
-|  [ Ver Detalle ]                                |
+|  Analizando... Los productos son:               |
+|  1. Botella Plástica 1L (0 movs en 30 días)     |
+|  2. Taza Blanca (2 movs en 30 días)             |
+|  [ Ver Reporte Completo ]                       |
 |                                                 |
+|            +----------------------------------+ |
+|            | [ 📷 Envía foto de factura ]     | |
+|            +----------------------------------+ |
 |                                                 |
 |  +-------------------------------------------+  |
-|  | [📷] [⌨️ Escribe aquí...]             [🎙️] |  |
+|  | [📷] [⌨️ Pide un ajuste o reporte...] [🎙️] |  |
 |  +-------------------------------------------+  |
 |                                                 |
 |-------------------------------------------------|
-| [🏠 Inicio] [📦 Inventario] [🤖 MIGO] [⚙️ Ajustes]|
+| [🏠 Panel] [📦 Inv] [📷 Escan] [🔄 Movs] [🤖 MIGO]|
 +-------------------------------------------------+
 ```
-*Notas de Diseño:* El botón de micrófono [🎙️] es prominente. Esta pantalla se enfoca en resolver el trabajo manual (la capa MIGO asiste interpretando voz/fotos/texto).
+
+---
+
+## Módulos Secundarios (Prioridad Reducida)
+
+Las siguientes pantallas existen pero se acceden desde un menú secundario (`[⚙️ Más]`).
+
+### 8. Compras & Ventas (Reducidos)
+Estructuralmente similares a "Movimientos", pero catalogan la transacción financieramente. Han sido removidos de la navegación principal.
+
+### 9. Reportes
+```text
++-------------------------------------------------+
+|  [< Atrás]        REPORTES                      |
+|                                                 |
+|  [📈 Valorización del Inventario]               |
+|  [📊 Movimientos por Bodega]                    |
+|  [📉 Rotación y Rentabilidad]                   |
+|                                                 |
+|  * MIGO puede generar reportes personalizados.  |
++-------------------------------------------------+
+```
+
+### 10. Configuración (Expandida)
+```text
++-------------------------------------------------+
+|  [< Atrás]      CONFIGURACIÓN                   |
+|                                                 |
+|  PERFIL: 🏢 Mi Tiendita                         |
+|  👤 Usuario: Administrador                      |
+|                                                 |
+|  SISTEMA Y HARDWARE:                            |
+|  [☁️] Sincronización: Activa (Offline First)    |
+|  [📱] Dispositivos Conectados: 2                |
+|  [🖨️] Impresoras y Escáneres Bluetooth          |
+|                                                 |
+|  GESTIÓN:                                       |
+|  [🏢] Empresas y Bodegas                        |
+|  [👥] Usuarios y Permisos                       |
+|  [🤖] Configuración del Comportamiento de IA    |
+|                                                 |
+|  +-------------------------------------------+  |
+|  |             CERRAR SESIÓN                 |  |
+|  +-------------------------------------------+  |
++-------------------------------------------------+
+```

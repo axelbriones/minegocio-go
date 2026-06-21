@@ -23,14 +23,20 @@ export const initDatabase = async () => {
       stock INTEGER NOT NULL DEFAULT 0,
       category TEXT,
       image TEXT,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      version INTEGER NOT NULL DEFAULT 1,
+      isDeleted INTEGER NOT NULL DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS sales (
       id TEXT PRIMARY KEY NOT NULL,
       total REAL NOT NULL,
       paymentType TEXT NOT NULL,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      version INTEGER NOT NULL DEFAULT 1,
+      isDeleted INTEGER NOT NULL DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS sale_items (
@@ -47,7 +53,10 @@ export const initDatabase = async () => {
       id TEXT PRIMARY KEY NOT NULL,
       supplier TEXT,
       total REAL NOT NULL,
-      createdAt TEXT NOT NULL
+      createdAt TEXT NOT NULL,
+      updatedAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      version INTEGER NOT NULL DEFAULT 1,
+      isDeleted INTEGER NOT NULL DEFAULT 0
     );
 
     CREATE TABLE IF NOT EXISTS purchase_items (
@@ -68,6 +77,18 @@ export const initDatabase = async () => {
       reason TEXT,
       createdAt TEXT NOT NULL,
       FOREIGN KEY (productId) REFERENCES products (id)
+    );
+
+    CREATE TABLE IF NOT EXISTS sync_queue (
+      id TEXT PRIMARY KEY NOT NULL,
+      operation TEXT NOT NULL, -- 'CREATE', 'UPDATE', 'DELETE'
+      entity TEXT NOT NULL,
+      entityId TEXT NOT NULL,
+      payload TEXT,
+      status TEXT NOT NULL DEFAULT 'PENDING', -- 'PENDING', 'ERROR'
+      error TEXT,
+      retryCount INTEGER NOT NULL DEFAULT 0,
+      createdAt TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
     );
   `);
 };

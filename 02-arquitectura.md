@@ -57,3 +57,18 @@ Componentes genéricos y agnósticos al negocio que consumen estrictamente el Th
 *   [ ] Tablas y modelos de datos SQLite.
 *   [ ] Flujos de operaciones (CRUD Inventario/Ventas).
 *   [ ] Integración de IA (MIGO).
+
+### 2.4 Ampliación del Design System (Componentes Adicionales)
+El sistema ha sido extendido exhaustivamente para soportar el 100% de la UI sin declarar estilos quemados. Todos los componentes cumplen accesibilidad (áreas táctiles mínimas de 48px y soporte para lectores):
+
+*   **Feedback:** `Alert`, `EmptyState`, `LoadingOverlay`.
+*   **Visuales:** `Avatar`, `Divider`, `ProgressBar`, `CircularProgress`.
+*   **Formularios:** `Switch`, `Checkbox`, `SearchInput`, `Select`.
+*   **Navegación:** `AppHeader`.
+*   **Diálogos:** `ModalBase`, `ConfirmDialog`.
+*   **Datos:** `KeyValueCard`.
+*   **Dominio (Inventario):** `ProductCard`.
+*   **Dominio (IA):** `AIChatBubble`.
+*   **Animaciones Base (`src/components/animations/`):** `FadeIn`, `FadeOut`, `SlideUp`, `SlideDown`, `Scale`, `SkeletonAnimation`.
+
+Estos componentes son agnósticos a la lógica de negocio (reciben datos vía *props*) y reaccionan de manera nativa al modo oscuro y paleta general del `ThemeContext`.

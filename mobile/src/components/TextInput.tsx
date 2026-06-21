@@ -15,6 +15,7 @@ export interface TextInputProps extends RNTextInputProps {
   label?: string;
   error?: string;
   icon?: React.ReactNode;
+  accessibilityLabel?: string;
 }
 
 export const TextInput: React.FC<TextInputProps> = ({
@@ -24,6 +25,7 @@ export const TextInput: React.FC<TextInputProps> = ({
   style,
   onFocus,
   onBlur,
+  accessibilityLabel,
   ...props
 }) => {
   const { colors } = useTheme();
@@ -73,6 +75,8 @@ export const TextInput: React.FC<TextInputProps> = ({
           placeholderTextColor={colors.textSecondary}
           onFocus={handleFocus}
           onBlur={handleBlur}
+          accessibilityLabel={accessibilityLabel || label || 'Input field'}
+          accessibilityRole="none"
           {...props}
         />
       </View>
@@ -98,7 +102,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 2,
     borderRadius: tokens.borderRadius.md,
-    height: 56, // Tall input for touch-friendliness
+    minHeight: 56, // Tall input for touch-friendliness (min 48px)
+    minWidth: 48,
     paddingHorizontal: spacing.md,
   },
   input: {

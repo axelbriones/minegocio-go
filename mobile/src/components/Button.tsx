@@ -7,6 +7,7 @@ import {
   StyleProp,
   ViewStyle,
   TextStyle,
+  AccessibilityRole,
 } from 'react-native';
 import { useTheme } from '../theme/ThemeContext';
 import { spacing } from '../theme/spacing';
@@ -23,6 +24,8 @@ interface ButtonProps {
   disabled?: boolean;
   style?: StyleProp<ViewStyle>;
   textStyle?: StyleProp<TextStyle>;
+  accessibilityLabel?: string;
+  accessibilityRole?: AccessibilityRole;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -34,6 +37,8 @@ export const Button: React.FC<ButtonProps> = ({
   disabled = false,
   style,
   textStyle,
+  accessibilityLabel,
+  accessibilityRole = 'button',
 }) => {
   const { colors, isDark } = useTheme();
   const scaleAnim = useRef(new Animated.Value(1)).current;
@@ -99,6 +104,9 @@ export const Button: React.FC<ButtonProps> = ({
         onPressOut={handlePressOut}
         activeOpacity={variant === 'ghost' ? 0.6 : 1}
         disabled={disabled}
+        accessibilityLabel={accessibilityLabel || title}
+        accessibilityRole={accessibilityRole}
+        accessibilityState={{ disabled }}
         style={[
           styles.button,
           {
@@ -128,7 +136,8 @@ export const Button: React.FC<ButtonProps> = ({
 
 const styles = StyleSheet.create({
   button: {
-    height: 64, // Large tap target (chunk & tap-friendly rule)
+    minHeight: 64, // Large tap target (chunk & tap-friendly rule, min 48px)
+    minWidth: 48,
     borderRadius: tokens.borderRadius.lg,
     justifyContent: 'center',
     alignItems: 'center',

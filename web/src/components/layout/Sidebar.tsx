@@ -2,13 +2,16 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Package, ShoppingCart, TrendingUp, Settings } from 'lucide-react';
+import { LayoutDashboard, Package, ShoppingCart, Settings, ArrowRightLeft, BellRing, Sparkles, Users } from 'lucide-react';
 
 const navigation = [
   { name: 'Dashboard', href: '/', icon: LayoutDashboard },
+  { name: 'MIGO IA', href: '/migo', icon: Sparkles },
   { name: 'Inventario', href: '/inventory', icon: Package },
+  { name: 'Movimientos', href: '/movements', icon: ArrowRightLeft },
   { name: 'Ventas', href: '/sales', icon: ShoppingCart },
-  { name: 'Compras', href: '/purchases', icon: TrendingUp },
+  { name: 'Clientes', href: '/customers', icon: Users },
+  { name: 'Alertas', href: '/alerts', icon: BellRing },
   { name: 'Configuración', href: '/settings', icon: Settings },
 ];
 
@@ -24,7 +27,7 @@ export function Sidebar() {
       </div>
       <nav className="flex-1 px-4 py-6 space-y-1 overflow-y-auto">
         {navigation.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           return (
             <Link
               key={item.name}

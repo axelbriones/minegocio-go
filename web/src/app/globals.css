@@ -1,0 +1,16 @@
+@import "tailwindcss";
+
+@theme {
+  --color-migo-green: #00A859;
+  --color-migo-blue: #2563EB;
+  --color-migo-bg: #F8FAFC;
+  --color-migo-text: #0F172A;
+  --color-migo-text-muted: #64748B;
+  --color-migo-red: #EF4444;
+}
+
+body {
+  background-color: var(--color-migo-bg);
+  color: var(--color-migo-text);
+  font-family: Arial, Helvetica, sans-serif;
+}

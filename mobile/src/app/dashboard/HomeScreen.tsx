@@ -1,8 +1,8 @@
 import React from 'react';
 import { StyleSheet, Text, View, SafeAreaView, ScrollView } from 'react-native';
 import { ShoppingCart, PackagePlus, List, TrendingUp, Sparkles } from 'lucide-react-native';
-import { Button } from '../components/Button';
-import { colors, spacing, typography } from '../theme';
+import { Button } from '../../shared/components/Botones/Button';
+import { colors, spacing, typography } from '../../theme';
 
 export const HomeScreen = () => {
   return (

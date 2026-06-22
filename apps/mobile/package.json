@@ -1,0 +1,10 @@
+{
+  "name": "mobile",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "echo 'mobile dev'",
+    "build": "echo \"build ${npm_package_name}\"",
+    "test": "echo \"test ${npm_package_name}\"",
+    "lint": "echo \"lint ${npm_package_name}\""
+  }
+}

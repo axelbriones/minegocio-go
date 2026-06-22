@@ -1,0 +1,10 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "scripts": {
+    "dev": "echo 'backend dev'",
+    "build": "echo \"build ${npm_package_name}\"",
+    "test": "echo \"test ${npm_package_name}\"",
+    "lint": "echo \"lint ${npm_package_name}\""
+  }
+}
